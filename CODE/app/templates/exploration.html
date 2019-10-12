@@ -1,0 +1,246 @@
+<!DOCTYPE HTML>
+<!--
+	Hyperspace by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+
+<head>
+	<title>Exploration</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="icon" type="image/png" href={{ url_for('static', filename='images/transport.png') }}>
+	<link rel="stylesheet" href="static/css/main.css" />
+	<noscript>
+		<link rel="stylesheet" href="static/css/noscript.css" /></noscript>
+</head>
+
+<body class="is-preload">
+
+	<!-- Header -->
+	<header id="header">
+		<a href="{{ url_for('main.home') }}" class="title">Team 74</a>
+		<nav>
+			<ul>
+				<li><a href="{{ url_for('main.home') }}">Home</a></li>
+				<li><a href="{{ url_for('main.exploration') }}" class="active">Exploration</a></li>
+				<li><a href="{{ url_for('main.interaction') }}">Interaction</a></li>
+			</ul>
+		</nav>
+	</header>
+
+	<!-- Wrapper -->
+	<div id="wrapper">
+
+		<!-- Main -->
+
+		<section id="one" class="wrapper">
+			<div class="inner">
+				<h1 class="major">Problem Statement</h1>
+				<span class="image fit"><img src="../static/images/carburning.jpeg" style="height:750px;width:1050px;border: 2px steelblue solid;padding: 15px;margin-left:auto;margin-right:auto" alt="" /></span>
+				<p>Road Traffic Accidents (RTAs) are a major cause of death globally, leading to  around 1.25 million deaths annually. Transport authorities worldwide have been striving to implement strategies to minimize RTAs by introducing various safety regulations. However, RTA reduction has proven to be an elusive goal as these measures have hitherto failed to make a considerable dent in the frequency of RTA.
+				</p>
+
+				<p> This failure partially stems from the difficulty in predicting when and where RTAs may occur. Although difficult, such prediction is not impossible. RTAs do not occur in purely stochastic manner; several publications affirm that the probability of RTAs is influenced by multitude of measurable factors. These factors include obvious ones such as driving speed, traffic condition, road structure and weather to less obvious ones such as national mood and lunar cycle.</p>
+
+				 <p>In an effort to reduce RTA frequency, various municipal and national governments in the UK have made available rich datasets of RTAs and their associated factors. We have explored these datasets and discovered factors that correlate well with RTA probability. Using this observation, we have created a machine learning model that predicts with high accuracy as to when and where RTAs are likely to occur.  </p>
+
+			</div>
+		</section>
+
+		<section id="two" class="wrapper">
+			<div class="inner">
+				<h1 class="major">Datasets and Research Methodology</h1>
+				<p>The main dataset we used for this project is the one retrieved from <a href="https://www.kaggle.com/daveianhickey/2000-16-traffic-flow-england-scotland-wales/version/8">Kaggle.</a>
+					This dataset contains details about 1.6 million traffic accidents that took place in the UK between 2000 and 2014.
+					These details include the location, time, severity of the accidents as well  their meteorological and traffic backdrops.
+					This dataset was originally amassed by various British regional and municipal governments.
+					In this project, we only used the portion of the dataset that recorded RTAs in Greater London between 2012 and 2014.</p>
+
+				<p>The aforementioned dataset, unfortunately, only contains "positive" samples - that is, records of accidents in London and various features of these accidents.
+					The dataset does not provide any "negative" samples - that is, records of vehicles that passed through the same spots without being involved in accidents.
+					As we wanted to predict the probability of accidents, it was imperative that we obtain negative samples.
+					We generated negative samples using a method previously described by <a href="http://urbcomp.ist.psu.edu/2017/papers/Predicting.pdf">Yuan et al</a>.
+					In essence, we created three negative samples for every location in which an accident has been recorded.
+					The features of these negative samples were selected at random, but caution was taken so that these synthesized negative samples did not match a real, positive data points.</p>
+
+				<p>Upon exploring the preprocessed  dataset, we discovered that there are locations in London where accidents happen frequently.
+					We then used <a href = "https://en.wikipedia.org/wiki/DBSCAN">the DBSCAN algorithm</a> to group these locations into clusters, which we then referred to as "accident hotspots".
+					We selected DBSCAN due to its ability to find arbitrarily shaped clusters and its robustness to outliers.
+					We considered the unclustered accident points as noise/outliers and did not include them in our subsequent steps.</p>
+
+				<p>We then performed further exploration of this dataset.
+					We found out that RTA probabilities were correlated with several features, including days of the week, time of the day and location.
+					We elaborated our finding in the following <a href="#three">subsection (Observations)</a>.
+					Having done all the above-mentioned steps, we were then in a good position to try out different algorithms to predict the probability of accidents happening in those accident hotspots.
+					Python was used for all model training. We found that the best performing model was Random Forest. </p>
+
+				<p>We then hosted this model on a web application - the one you are looking at right now .
+					This web application was built using Flask and all the html pages are integrated into the web application.
+					The web application also includes an <a href="{{ url_for('main.interaction') }}">interactive RTA prediction</a>.
+					This prediction allows users to input an origin, destination and time of travel of up to 48 hours from the current time.
+					It will then calculate the probability of accidents in the accident hotspots that happen to lie along the best route connecting the origin and destination, as defined by Google Map's Geolocation API.
+					Apart from Google Map, this prediction also uses real-time weather forecast data provided by <a href="darksky.net">Dark Sky</a>, an American company that specializes in weather forecasting.</p>
+
+
+
+			</div>
+		</section>
+
+		<!-- Main -->
+		<section id="three" class="wrapper">
+			<div class="inner">
+				<h1 class="major">Exploration and Observations</h1>
+				<p style="clear:both">Upon exploring our cleaned dataset, we made several interesting observations. These observations are elaborated below.</p>
+
+				<iframe src="{{ url_for('main.month') }}" id="iframe_month" style="height:550px;width:550px;border: 2px steelblue solid;padding: 15px;margin: :5px;float:right"></iframe>
+
+
+				<p style="clear:left"><b><i>Which months are road traffic accidents most likely to occur? </b></i></p>
+				<p>The heatmap on the right shows how many accidents have occured for each day of the week in all calendar months.
+					We can see that the months of September until December are characterized by a relatively high frequency of accident.
+					These are the months of autumn in London, which are characterized by low temperature, fog and rain.</p>
+
+				<p>We also observe that, counterintuitively, fewer accidents take place in the chilly winter months of January and February.
+					This might suggest that people are more reluctant to drive during this time.</p>
+
+				<p style="clear:both"> </p>
+
+				<iframe src="{{ url_for('main.hour') }}" name="iframe_b" style="height:550px;width:850px;border: 2px steelblue solid;padding: 15px;margin: 15px;float:left"></iframe>
+				<p style="clear:right;margin-left: 15px"><b><i>What time of the day are road traffic accidents most likely to occur? </b></i>
+
+				<p>For each day of the week, this heatmap shows how many traffic accidents have occured by the hour.
+					We observe that not surprisingly, most RTA happens during morning rush hour from 8am to 9am and evening rush hour from 3pm to 7pm (purple blocks).
+					Friday is particularly worse compared to the other days of the week; this might be due to the fact that more people drive on Fridays.
+				</p>
+
+				<p style="clear:both"> </p>
+
+				<iframe src="{{ url_for('main.vehicles') }}" name="iframe_c" style="height:550px;width:850px;border: 2px steelblue solid;padding: 15px;margin-right:15px;float:right"></iframe>
+
+
+					<p style="clear:left"><b><i>How many vehicles are involved per accident?</b></i></p>
+					<p> The bar graph on the right shows the distribution of accidents based on the number of vehicles involved.
+						It shows that most accidents involve one or two vehicles.
+						This intuitively makes sense; most accidents happen as a result of a car veering off the road and/or collision between two cars.</p>
+
+				<p style="clear:both"> </p>
+					<iframe src="{{ url_for('main.casualties') }}" name="iframe_d" style="height:550px;width:850px;border: 2px steelblue solid;padding: 15px;margin: 15px;float:left"></iframe>
+
+					<p style="clear:right"><b><i>How many casualties are involved in the accidents?</b></i></p>
+
+					<p> The bar graph on the left shows the distribution of accidents based on the number of casualties involved.
+						A casualty can also be a minor injury to fatal. We see that most of the accidents involve only one casualty.</p>
+
+					<p style="clear:both"> </p>
+
+					<iframe src="{{ url_for('main.boroughs') }}" name="iframe_d" style="height:750px;width:1050px;border: 2px steelblue solid;padding: 15px;margin: 15px;float:right"></iframe>
+
+					<p style="clear:left"><b><i>In which boroughs do RTAs happen most often?</b></i></p>
+
+					<p>The bar chart on the right shows how many RTAs take place in different boroughs of London.
+						We see that Westminster takes the number one spot and Kingston Upon Thames comes in last place with the least traffic accidents.</p>
+
+					<p style="clear:both"> </p>
+
+
+
+					<iframe src="{{ url_for('main.london') }}" name="iframe_f" style="height:750px;width:1050px;border: 2px steelblue solid;padding: 15px;margin: 15px;float:left"></iframe>
+
+					<p style="clear:right"><b><i>How does each borough rank in the number of road traffic accidents?</b></i></p>
+
+					<p>The map on the left shows the same information as the bar chart above in a different way.
+						It color codes the RTA probabilities of different boroughs, with accident-prone boroughs having darker colors.
+						We can see that Westminster, with its intense purple color, taking the number one spot with the most traffic accidents.
+						Kingston Upon Thames comes in last place with the least traffic accidents.
+						The three most accident prones boroughs - Westminster, Barnet and Lambeth, are indicated with markers. </p>
+
+					<p style="clear:both"> </p>
+
+
+			</div>
+		</section>
+
+		<section id="four" class="wrapper">
+			<div class="inner">
+				<h1 class="major">Algorithms</h1>
+
+				<p>As mentioned above, we performed density-based clustering (DBSCAN) to group together accident points into several "hotspots".
+					We then tested four classification models to find RTA probability in the hotspots.
+					We found that Random Forest performs the best, as measured by accuracy and area-under-the-curve (AUC).</p>
+				<p>
+				The summary of the performance of our algorithms is provided below.
+				We believe that have we had additional time, performing further hyperparameter tuning could yield better results.
+</p>
+
+
+
+<div class="table-wrapper">
+	<table>
+		<thead>
+			<tr>
+				<th>Model</th>
+				<th>Predictors</th>
+				<th>Accuracy</th>
+				<th>AUC</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>Logistics Regression</td>
+				<td>25 Numerical Features</td>
+				<td>0.7611</td>
+				<td>0.6753</td>
+			</tr>
+			<tr>
+				<td>Random Forest with only numerical predictors</td>
+				<td>25 Numerical Features</td>
+				<td>0.8347</td>
+				<td>0.8705</td>
+			</tr>
+			<tr>
+				<td>Random Forest with one-hot-encoding of categorical features</td>
+				<td> 21 Numerical features with highly-correlated counterpart removed.</br>
+				2 Categorical features converted to 12 numeric features with one-hot-encoding
+				</td>
+				<td>0.7865</td>
+				<td>0.499</td>
+			</tr>
+			<tr>
+				<td>Support Vector Machine</td>
+				<td>21 Numerical Features</td>
+				<td>Inconclusive since the algorithm's running time is too long.</td>
+				<td>Inconclusive</td>
+			</tr>
+
+		</tbody>
+
+	</table>
+</div>
+			</div>
+		</section>
+	</div>
+
+	<!-- Footer -->
+	<footer id="footer" class="wrapper alt">
+		<div class="inner">
+			<ul class="menu">
+				<li>&copy; Team 74. All rights reserved.</li>
+				<li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+			</ul>
+		</div>
+	</footer>
+
+	<!-- Scripts -->
+	<script src="static/js/jquery.min.js"></script>
+	<script src="static/js/jquery.scrollex.min.js"></script>
+	<script src="static/js/jquery.scrolly.min.js"></script>
+	<script src="static/js/browser.min.js"></script>
+	<script src="static/js/breakpoints.min.js"></script>
+	<script src="static/js/util.js"></script>
+	<script src="static/js/main.js"></script>
+
+</body>
+
+</html>

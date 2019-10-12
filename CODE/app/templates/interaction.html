@@ -1,0 +1,92 @@
+<!DOCTYPE HTML>
+<!--
+	Hyperspace by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Interaction</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+			<link rel="icon" type="image/png" href={{ url_for('static', filename='images/transport.png') }}>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+	  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+		<noscript><link rel="stylesheet" href="static/css/noscript.css" /></noscript>
+
+
+
+	</head>
+	<body class="is-preload">
+
+		<!-- Header -->
+			<header id="header">
+				<a href="{{ url_for('main.home') }}" class="title">Team 74</a>
+				<nav>
+					<ul>
+						<li><a href="{{ url_for('main.home') }}">Home</a></li>
+						<li><a href="{{ url_for('main.exploration') }}">Exploration</a></li>
+						<li><a href="{{ url_for('main.interaction') }}" class="active">Interaction</a></li>
+					</ul>
+				</nav>
+			</header>
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+		<section id="main" class="wrapper">
+			<div class="inner">
+
+				<h1 class="major">Interactive RTA Prediction Map</h1>
+				<p>This interactive map allows you to find accident hotspots along an optimized driving route between two locations in Greater London at a particular time.</p>
+
+				<p>To use the map, please pick : <br />
+					(1) a date/time in the next 48 hours, <br />
+					(2) your  origin and <br />
+					(3) your destination <br />
+
+				<p>Your inputs will result in an API call to Google Map's Geolocation API, which will select the best driving route connecting your origin and your destination.
+					This route will be shown on the map.
+					In addition, your inputs will also trigger an API call to <a href="darksky.net">Dark Sky</a>, which will provide information about the weather condition in London for your input time.
+					We will then feed all these inputs to our predictive model, which will output the corresponding RTA risk on the map.</p>
+				<p>Refresh page if there are no dropdown boxes in the map. Please note that accident points may take a while to load.</p>
+
+
+				<!--Date time picker-->
+			<div class='col-lg-9'>
+
+					<iframe src="{{ url_for('main.map') }}" name="iframe_a" style="height:800px;width:1300px;border: 2px steelblue solid;padding: 15px;margin: 15px"></iframe>
+
+			</div>
+
+			<!-- Footer -->
+			<footer id="footer"  style="position:relative; bottom:0;clear:both" >
+				<div class="inner">
+					<ul class="menu">
+						<li>&copy; Team 74. All rights reserved.</li>
+						<li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+					</ul>
+				</div>
+			</footer>
+		</section>
+	</div>
+
+
+
+		<!-- Scripts -->
+			<script src="static/js/d3-tip.min.js"></script>
+			<script src="static/js/interaction.js"></script>
+			<script src="static/js/jquery.min.js"></script>
+			<script src="static/js/jquery.scrollex.min.js"></script>
+			<script src="static/js/jquery.scrolly.min.js"></script>
+			<script src="static/js/browser.min.js"></script>
+			<script src="static/js/breakpoints.min.js"></script>
+			<script src="static/js/util.js"></script>
+			<script src="static/js/main.js"></script>
+
+
+	</body>
+</html>

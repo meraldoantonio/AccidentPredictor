@@ -1,0 +1,25 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = "==1.0"
+prompt-toolkit = "==1.0.14"
+flask-sqlalchemy = "*"
+flask-wtf = "*"
+utils = "*"
+wtforms = "==2.1"
+sqlalchemy = "==1.2.7"
+pip = "*"
+print-json-middleware = "*"
+flask-bcrypt = "*"
+pandas = "*"
+requests = "*"
+wtforms-components = "*"
+sklearn = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"

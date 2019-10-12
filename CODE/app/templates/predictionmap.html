@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Place Autocomplete and Directions</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery.datetimepicker.min.css') }}"/>
+    <style>
+        #loading {
+              width: 100%;
+              height: 100%;
+              top: 0;
+              left: 0;
+              position: fixed;
+              display: block;
+              opacity: 0.7;
+              background-color: #fff;
+              z-index: 99;
+              text-align: center;
+              }
+        #loading-image {
+              position: absolute;
+              top: 100px;
+              left: 240px;
+              z-index: 100;
+              }
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+            height: 100%;
+        }
+        /* Optional: Makes the sample page fill the window. */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .controls {
+            margin-top: 10px;
+            border: 1px solid transparent;
+            border-radius: 2px 0 0 2px;
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            height: 32px;
+            outline: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+        #datetime-input,
+        #origin-input,
+        #destination-input {
+            background-color: #fff;
+            font-family: Roboto;
+            font-size: 15px;
+            font-weight: 300;
+            margin-left: 12px;
+            padding: 0 11px 0 13px;
+            text-overflow: ellipsis;
+            width: 200px;
+        }
+        #origin-input:focus,
+        #destination-input:focus {
+            border-color: #4d90fe;
+        }
+        #mode-selector {
+            color: #fff;
+            background-color: #4d90fe;
+            margin-left: 12px;
+            padding: 5px 11px 0px 11px;
+        }
+        #mode-selector label {
+            font-family: Roboto;
+            font-size: 13px;
+            font-weight: 300;
+        }
+    </style>
+</head>
+<body>
+  <!-- add loading screen-->
+  <div id="loading">
+    <img id="loading-image" src="https://cdn-images-1.medium.com/max/800/1*9EBHIOzhE1XfMYoKz1JcsQ.gif" alt="Loading..." />
+
+  </div>
+
+
+<div style="display: none">
+    <input id="origin-input" class="controls" type="text"
+           placeholder="Enter an origin location">
+
+    <input id="destination-input" class="controls" type="text"
+           placeholder="Enter a destination location">
+
+    <input id="datetime-input"  class="controls" type="text" autocomplete="off" name="datetime"
+          placeholder="Enter a date and time" >
+    <input id="refresh" type="reset" value="Next Prediction" onClick="document.location.reload(true)">
+</div>
+
+<div id="map"></div>
+
+<script>
+    // This example requires the Places library. Include the libraries=places
+    // parameter when you first load the API. For example:
+    // <script
+    // src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
+    var map;
+    var markers = [];
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            mapTypeControl: false,
+            center: {lat: 51.5058, lng: -0.1},
+            zoom: 13
+        });
+        new AutocompleteDirectionsHandler(map);
+    }
+    /**
+     * @constructor
+     */
+    function AutocompleteDirectionsHandler(map) {
+        this.map = map;
+        this.originPlaceId = null;
+        this.destinationPlaceId = null;
+        this.travelMode = 'DRIVING';
+        this.directionsService = new google.maps.DirectionsService;
+        this.directionsDisplay = new google.maps.DirectionsRenderer;
+        this.directionsDisplay.setMap(map);
+        //datetime picker
+       $(function () {
+            var date = new Date();
+            var currentMonth = date.getMonth();
+            var currentYear = date.getFullYear();
+            var currentDate = date.getDate() + 2;
+           $("#datetime-input").datetimepicker({maxDate: new Date(currentYear, currentMonth, currentDate)});
+       });
+        var originInput = document.getElementById('origin-input');
+        var destinationInput = document.getElementById('destination-input');
+        var datetimeInput = document.getElementById('datetime-input');
+        // var modeSelector = document.getElementById('mode-selector');
+        var originAutocomplete = new google.maps.places.Autocomplete(originInput);
+        // Specify just the place data fields that you need.
+        originAutocomplete.setFields(['place_id']);
+        var destinationAutocomplete =
+            new google.maps.places.Autocomplete(destinationInput);
+        // Specify just the place data fields that you need.
+        destinationAutocomplete.setFields(['place_id']);
+
+        this.setupPlaceChangedListener(originAutocomplete, 'ORIG');
+        this.setupPlaceChangedListener(destinationAutocomplete, 'DEST');
+        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(datetimeInput);
+        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(originInput);
+        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(destinationInput);
+        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(refresh);
+        // this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(modeSelector);
+    }
+
+    AutocompleteDirectionsHandler.prototype.setupPlaceChangedListener = function(
+        autocomplete, mode) {
+        var me = this;
+        autocomplete.bindTo('bounds', this.map);
+        autocomplete.addListener('place_changed', function() {
+            var place = autocomplete.getPlace();
+            if (!place.place_id) {
+                window.alert('Please select an option from the dropdown list.');
+                return;
+            }
+            if (mode === 'ORIG') {
+                me.originPlaceId = place.place_id;
+            } else {
+                me.destinationPlaceId = place.place_id;
+            }
+            me.route();
+        });
+    };
+    AutocompleteDirectionsHandler.prototype.route = function() {
+        if (!this.originPlaceId || !this.destinationPlaceId) {
+            return;
+        }
+        var me = this;
+        // Sending and receiving data in JSON format using POST method
+        var xhr = new XMLHttpRequest();
+        var url = "{{ url_for('main.prediction') }}";
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var json = JSON.parse(xhr.responseText);
+                console.log(json);
+                //if no accident, alert user, else display icons
+                if(json == null ) {window.alert('Hooray! No accidents predicted in your route. Click "Next Prediction" to reset map.');}
+                else {showAccidents2(json); }
+            }
+        };
+        var data = JSON.stringify({"origin": document.getElementById("origin-input").value,
+                                    "destination": document.getElementById("destination-input").value,
+                                    "datetime": document.getElementById("datetime-input").value});
+        xhr.send(data);
+         this.directionsService.route(
+             {
+                 origin: {'placeId': this.originPlaceId},
+                 destination: {'placeId': this.destinationPlaceId},
+                 travelMode: this.travelMode
+             },
+            function(response, status) {
+                 if (status === 'OK') {
+                     me.directionsDisplay.setDirections(response);
+                 } else {
+                     window.alert('Directions request failed due to ' + status);
+                 }
+             });
+    };
+	function showAccidents2(accident_json) {
+
+        var icon = {
+          url:'https://cdn3.iconfinder.com/data/icons/map-markers-1/512/death-512.png',
+          scaledSize: new google.maps.Size(20, 32), // scaled size
+        };
+
+        var count = Object.keys(accident_json.accidents).length;
+        console.log(count);
+        window.alert(count + ' accidents predicted. Zoom in and hover over icon to view probability. Click "Next Prediction" to reset map.');
+        setMapOnAll(null);
+        markers = [];
+    		for(var i = 0; i < count; i++)
+        		{
+        			var marker = new google.maps.Marker({
+        				position: new google.maps.LatLng( accident_json.accidents[i].lat, accident_json.accidents[i].lng),
+        				map: map,
+        				icon: icon,
+        				title: 'Probability: ' + accident_json.accidents[i].probability.toString()
+        			});
+        			markers.push(marker);
+        		}
+        // marker.setMap(map);
+        setMapOnAll(map);
+    }
+    // Sets the map on all markers in the array.
+    function setMapOnAll(map) {
+        for (var i = 0; i < markers.length; i++) {
+            markers[i].setMap(map);
+        }
+    }
+    //var markerArray = [];
+    function showSteps(directionResult) {
+        // For each step, place a marker, and add the text to the marker's
+        // info window. Also attach the marker to an array so we
+        // can keep track of it and remove it when calculating new
+        // routes.
+        var myRoute = directionResult.routes[0].legs[0];
+        for (var i = 0; i < myRoute.steps.length; i++) {
+            var marker = new google.maps.Marker({
+                position: myRoute.steps[i].start_point,
+                map: map
+            });
+            // console.log("Step:" + i + "," + myRoute.steps[i].start_point);
+            attachInstructionText(marker, myRoute.steps[i].instructions);
+            //markerArray[i] = marker;
+        }
+    }
+    function attachInstructionText(marker, text) {
+        google.maps.event.addListener(marker, 'click', function() {
+            stepDisplay.setContent(text);
+            stepDisplay.open(map, marker);
+        });
+    }
+// https://stackoverflow.com/questions/1006654/fastest-way-to-find-distance-between-two-lat-long-points
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDWXiPZ_g6KUTc_5QN73fz7fBHPgzLCx78&libraries=places&callback=initMap"
+        async defer></script>
+<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.datetimepicker.full.js') }}"></script>
+<script language="javascript" type="text/javascript">
+     $(window).load(function() {
+     $('#loading').hide();
+  });
+</script>
+</body>
+</html>

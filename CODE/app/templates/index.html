@@ -1,0 +1,164 @@
+<!DOCTYPE HTML>
+<!--
+	Hyperspace by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Road Traffic Accident</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="icon" type="image/png" href={{ url_for('static', filename='images/transport.png') }}>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}"/>
+		<noscript><link rel="stylesheet" href={{ url_for('static', filename='css/noscript.css') }}/></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Sidebar -->
+			<section id="sidebar">
+				<div class="inner">
+					<nav>
+						<ul>
+							<li><a href="#intro">Introduction</a></li>
+							<li><a href="#one">Exploration</a></li>
+							<li><a href="#two">Interaction</a></li>
+							<li><a href="#three">About</a></li>
+						</ul>
+					</nav>
+				</div>
+			</section>
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Intro -->
+					<section id="intro" class="wrapper style1 fullscreen fade-up">
+						<div class="inner">
+							<h1>Prediction of Road Traffic Accidents</h1>
+							<h3>Road Traffic Accidents (RTAs) are a major cause of death globally. Every year, millions of individuals perish on the roads.</h3>
+							<p>In this project, we built a machine learning model that predicts the probability of RTAs in different locations in London.</br>
+								We hope that this project can contribute to the improvement of road safety in London.</br><i>
+									<p>For best viewing experience, please open this website in Google Chrome in a full-screen mode.</p>
+							</i></p>
+							<ul class="actions">
+								<li><a href="#one" class="button scrolly">Learn more</a></li>
+							</ul>
+						</div>
+					</section>
+
+				<!-- One -->
+					<section id="one" class="wrapper style2 spotlights">
+						<section>
+
+							<div class="content">
+								<div class="inner">
+									<h2>Problem Statement</h2>
+									<p>This subsection provides the motivation behind our effort to build a RTA prediction model.</p>
+									<ul class="actions">
+										<li><a href="{{ url_for('main.exploration') }}" class="button">Explore</a></li>
+									</ul>
+								</div>
+							</div>
+						</section>
+						<section>
+
+							<div class="content">
+								<div class="inner">
+									<h2>Datasets and Research Methodology</h2>
+									<p>This subsection elaborates our data collection process and the steps we undertook to build the RTA prediction model.</p>
+									<ul class="actions">
+										<!--<li><a href="exploration.html#two" class="button">Explore</a></li> -->
+										<li><a href="{{ url_for('main.exploration') }}#two" class="button">Explore</a></li>
+
+									</ul>
+								</div>
+							</div>
+						</section>
+						<section>
+
+							<div class="content">
+								<div class="inner">
+									<h2>Exploration and Observations</h2>
+									<p>This subsection condenses the interesting observations and takeaways we had upon exploring the dataset.</p>
+									<ul class="actions">
+										<li><a href="{{ url_for('main.exploration') }}#three" class="button">Explore</a></li>
+									</ul>
+								</div>
+							</div>
+						</section>
+						<section>
+							<div class="content">
+								<div class="inner">
+									<h2>Algorithms</h2>
+									<p>This subsection summarizes the prediction algorithms we tried and their performance.</p>
+									<ul class="actions">
+										<li><a href="{{ url_for('main.exploration') }}#four" class="button">Explore</a></li>
+									</ul>
+								</div>
+							</div>
+						</section>
+					</section>
+
+				<!-- Two -->
+					<section id="two" class="wrapper style3 fade-up">
+						<div class="inner">
+							<h2>Interactive Page</h2>
+							<p>Using the best performing algorithm, we built an interactive RTA prediction visualization. Click the button below to visit this interactive page.</p>
+
+							<ul class="actions">
+								<li><a href="{{ url_for('main.interaction') }}"class="button">Interact</a></li>
+							</ul>
+						</div>
+					</section>
+
+				<!-- Three -->
+					<section id="three" class="wrapper style1 fade-up">
+						<div class="inner">
+							<h2>About</h2>
+							<p>We are six students currently enrolled in <b>Georgia Institute of Technology's Master in Analytics.</b></br>
+							We created this project as a part of a course: <b>CSE6242  (Data and Visual Analytics)</b>.</br></p>
+							<p>For suggestions and inquries, feel free to contact us through the links below, which will take you to our LinkedIn profiles.</p>
+							<div class="row">
+								<div class="col-6 col-12-medium">
+									<ul class="actions">
+										<li><a href="https://www.linkedin.com/in/katannyakapeli/" class="button">Katannya Kapeli</a></li>
+										<li><a href="https://www.linkedin.com/in/meraldo/" class="button">Meraldo Antonio</a></li>
+										<li><a href="https://www.linkedin.com/in/rajlalwani/" class="button">Rajkumar Lalwani</a></li>
+									</ul>
+									<ul class="actions">
+										<li><a href="https://www.linkedin.com/in/kee-eng-roger-teo-ab0b8823/" class="button">Roger Teo Kee Eng</a></li>
+										<li><a href="https://www.linkedin.com/in/siew-lee-koh/" class="button">Siew Lee Koh</a></li>
+										<li><a href="https://www.linkedin.com/in/yeok-kwan/" class="button">Yeok Kwan Chong</a></li>
+									</ul>
+							</div>
+
+
+						</div>
+					</section>
+
+			</div>
+
+		<!-- Footer -->
+			<footer id="footer" class="wrapper style1-alt">
+				<div class="inner">
+					<ul class="menu">
+						<li>&copy; Team 74. All rights reserved.</li>
+						<li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+						
+					</ul>
+				</div>
+			</footer>
+
+		<!-- Scripts -->
+
+			<script src="static/js/jquery.min.js"></script>
+			<script src="static/js/jquery.scrollex.min.js"></script>
+			<script src="static/js/jquery.scrolly.min.js"></script>
+			<script src="static/js/browser.min.js"></script>
+			<script src="static/js/breakpoints.min.js"></script>
+			<script src="static/js/util.js"></script>
+			<script src="static/js/main.js"></script>
+
+	</body>
+</html>
